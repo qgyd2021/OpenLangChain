@@ -1,0 +1,13 @@
+
+dotenv/
+
+.git/
+.idea/
+
+**/cache/
+**/data/
+**/data_dir/
+**/pretrained_models/
+**/__pycache__/
+
+**/*.pdf
