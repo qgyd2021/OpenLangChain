@@ -27,7 +27,7 @@ environment = EnvironmentManager(
     env=os.environ.get('environment', 'dev'),
 )
 
-port = environment.get(key='port', default=9080, dtype=int)
+port = environment.get(key='port', default=9380, dtype=int)
 
 openai_api_key = environment.get(key='openai_api_key', default='openai_api_key', dtype=str)
 hf_api_token = environment.get(key='hf_api_token', default='hf_api_token', dtype=str)
