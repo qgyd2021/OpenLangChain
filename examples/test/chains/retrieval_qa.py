@@ -5,13 +5,14 @@ https://betterprogramming.pub/d1864d47e339
 
 """
 import argparse
+import os
 from typing import Iterator, List
 
 from langchain.chains import RetrievalQA
 from langchain.document_loaders import PyPDFLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings
-from langchain.llms import OpenAI
+from langchain.llms.huggingface_hub import HuggingFaceHub
 from langchain.schema import Document
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import Chroma, VectorStore
@@ -62,6 +63,11 @@ def get_args():
         default=settings.environment.get("openai_api_key", default=None, dtype=str),
         type=str
     )
+    parser.add_argument(
+        "--hf_api_token",
+        default=settings.environment.get("hf_api_token", default=None, dtype=str),
+        type=str
+    )
     args = parser.parse_args()
     return args
 
@@ -95,12 +101,17 @@ def main():
         embedding=hf_embedding,
         persist_directory=args.persist_directory
     )
-    vector_db.persist()
+    if not os.path.exists(args.persist_directory):
+        vector_db.persist()
+
+    llm = HuggingFaceHub(
+        repo_id="gpt2",
+        # repo_id="anon8231489123/gpt4-x-alpaca-13b-native-4bit-128g",
+        huggingfacehub_api_token=args.hf_api_token,
+    )
 
     qa_chain = RetrievalQA.from_chain_type(
-        llm=OpenAI(
-            openai_api_key=args.openai_api_key
-        ),
+        llm=llm,
         retriever=vector_db.as_retriever(search_kwargs={'k': 3}),
         return_source_documents=True
     )

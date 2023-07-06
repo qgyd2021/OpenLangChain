@@ -7,7 +7,12 @@ dotenv/
 **/cache/
 **/data/
 **/data_dir/
+**/log/
+**/logs/
 **/pretrained_models/
+**/temp/
 **/__pycache__/
 
+**/*.env
+**/*.html
 **/*.pdf

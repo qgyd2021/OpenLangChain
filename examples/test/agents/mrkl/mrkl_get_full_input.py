@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import argparse
 from datetime import datetime
-from typing import List
 
 from langchain.agents import Tool
 from langchain.agents.agent import Agent
@@ -75,10 +74,14 @@ def main():
         )
     ]
 
-    scratchpad = agent._construct_scratchpad(
-        intermediate_steps=intermediate_steps
+    inputs = {"input": "what's the date today."}
+
+    full_inputs = agent.get_full_inputs(
+        intermediate_steps=intermediate_steps,
+        **inputs
     )
-    print(scratchpad)
+    print(full_inputs)
+    print(agent._stop)
     return
 
 

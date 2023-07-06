@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import argparse
 from datetime import datetime
-from typing import List
 
 from langchain.agents import Tool
 from langchain.agents.agent import Agent

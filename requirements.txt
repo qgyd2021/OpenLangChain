@@ -6,3 +6,7 @@ pypdf==3.11.1
 chromadb==0.3.26
 python-dotenv==1.0.0
 sentence-transformers==2.2.2
+flask==2.3.2
+gevent==22.10.2
+jsonschema==4.17.3
+beautifulsoup4==4.12.2

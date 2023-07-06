@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import argparse
 from datetime import datetime
-from typing import List
+from typing import Union
 
 from langchain.agents import Tool
 from langchain.agents.agent import Agent
@@ -27,14 +27,13 @@ def get_args():
     return args
 
 
-def today_date(query: str) -> str:
-    now = datetime.now()
-    now_str = now.strftime("%Y-%m-%d %H:%M:%S")
-    return now_str
-
-
 def main():
     args = get_args()
+
+    def today_date(query: str) -> str:
+        now = datetime.now()
+        now_str = now.strftime("%Y-%m-%d %H:%M:%S")
+        return now_str
 
     tools = [
         Tool(
@@ -43,6 +42,7 @@ def main():
             description="useful for when you want to know the date of today"
         )
     ]
+    tool_name_to_tools = {tool.name: tool for tool in tools}
 
     # llm
     llm = OpenAI(
@@ -68,17 +68,36 @@ def main():
         allowed_tools=[tool.name for tool in tools]
     )
 
-    intermediate_steps = [
-        (
-            AgentAction(tool="Today Date", tool_input="None", log="Action: Date Time\nAction Input: None"),
-            "2023-07-05"
-        )
-    ]
+    intermediate_steps = list()
 
-    scratchpad = agent._construct_scratchpad(
-        intermediate_steps=intermediate_steps
+    inputs = {"input": "what's the date today."}
+    # inputs = {"input": "what's your name."}
+
+    agent_plan_result: Union[AgentAction, AgentFinish] = agent.plan(
+        intermediate_steps=intermediate_steps,
+        callbacks=None,
+        **inputs
     )
-    print(scratchpad)
+
+    tool_func = tool_name_to_tools[agent_plan_result.tool]
+    observation = tool_func(agent_plan_result.tool_input)
+    intermediate_steps.append((agent_plan_result, observation))
+
+    agent_plan_result: Union[AgentAction, AgentFinish] = agent.plan(
+        intermediate_steps=intermediate_steps,
+        callbacks=None,
+        **inputs
+    )
+    if isinstance(agent_plan_result, AgentAction):
+        print(agent_plan_result.tool)
+        print(agent_plan_result.tool_input)
+        print(agent_plan_result.log)
+    elif isinstance(agent_plan_result, AgentFinish):
+        print(agent_plan_result.return_values)
+        print(agent_plan_result.log)
+    else:
+        raise AssertionError
+
     return
 
 

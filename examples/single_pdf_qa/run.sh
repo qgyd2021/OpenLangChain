@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # sh run.sh --stage 0 --stop_stage 1 --system_version windows
+# sh run.sh --stage 1 --stop_stage 1 --system_version windows
 
 
 system_version=windows
@@ -76,7 +77,7 @@ if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
 
   echo "query: ${query}";
 
-  python3 hf_openai.py \
+  python3 hf_hf.py \
   --filename "${data_dir}/${pdf_idx}.pdf" \
   --query "${query}"
 

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SingleDocQA</title>
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+</head>
+<body>
+
+
+<!-- 导航栏 -->
+<div class="navigation">
+  <div>
+    <div class="global_options">
+      <div>engine: </div>
+      <form>
+        <select class="global_selector" id="select_engine_name">
+        </select>
+      </form>
+    </div>
+
+    <div class="global_options">
+      <div>source: </div>
+      <input id="file_url" placeholder="请输入URL" value="https://arxiv.org/pdf/2203.02155.pdf">
+    </div>
+
+    <div class="global_options">
+      <div>query: </div>
+      <input id="query" placeholder="请输入查询语句" value="what's the InstructGPT ?">
+    </div>
+
+    <div class="global_options">
+      <div>top_k: </div>
+      <input id="top_k" placeholder="3" value="3">
+    </div>
+
+    <div class="global_options">
+      <div>chunk_size: </div>
+      <input id="chunk_size" placeholder="100" value="1000">
+    </div>
+
+    <div class="global_options">
+      <div>chunk_overlap: </div>
+      <input id="chunk_overlap" placeholder="20" value="200">
+    </div>
+
+    <div class="global_options" id="search">search</div>
+  </div>
+</div>
+
+
+<!-- 内容 -->
+<div class="content">
+  <div class="left_content">
+    <ul class="v_nav" >
+      <li>选择一篇论文: https://arxiv.org/search/?query=LLM&searchtype=all&source=header </li>
+      <li>执行流程: </li>
+      <li>(1)下载pdf文件</li>
+      <li>(2)将文件内容分割</li>
+      <li>(3)根据query和top_k召回documents</li>
+      <li>(4)根据documents和query调用OpenAI回答</li>
+    </ul>
+    <div class="left_content_tips">
+      <table class="tips_table" id=""></table>
+    </div>
+  </div>
+
+  <div class="right_content">
+    <div>
+      <div id="answer_box" class="llm_result">
+        <div>Answer: </div>
+        <div id="answer"></div>
+      </div>
+      <div id="documents_box" class="llm_result">
+        <div>Documents: </div>
+        <div id="documents">
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+
+<!--  底部  -->
+<div class="tail">
+  <div>
+    NX
+  </div>
+</div>
+
+
+<!-- 引入样式和脚本 -->
+<link rel="stylesheet" href="../css/doc_qa.css" />
+<script src="../js/doc_qa.js"></script>
+
+</body>
+</html>

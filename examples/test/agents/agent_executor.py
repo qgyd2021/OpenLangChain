@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 import argparse
 from datetime import datetime
-from typing import List
+from typing import Union
 
 from langchain.agents import Tool
-from langchain.agents.agent import Agent
+from langchain.agents.agent import Agent, AgentExecutor
 from langchain.agents.mrkl.output_parser import MRKLOutputParser
 from langchain.chains import LLMChain
 from langchain.llms import OpenAI, HuggingFaceHub
@@ -27,14 +27,13 @@ def get_args():
     return args
 
 
-def today_date(query: str) -> str:
-    now = datetime.now()
-    now_str = now.strftime("%Y-%m-%d %H:%M:%S")
-    return now_str
-
-
 def main():
     args = get_args()
+
+    def today_date(query: str) -> str:
+        now = datetime.now()
+        now_str = now.strftime("%Y-%m-%d %H:%M:%S")
+        return now_str
 
     tools = [
         Tool(
@@ -68,17 +67,17 @@ def main():
         allowed_tools=[tool.name for tool in tools]
     )
 
-    intermediate_steps = [
-        (
-            AgentAction(tool="Today Date", tool_input="None", log="Action: Date Time\nAction Input: None"),
-            "2023-07-05"
-        )
-    ]
-
-    scratchpad = agent._construct_scratchpad(
-        intermediate_steps=intermediate_steps
+    agent_executor = AgentExecutor.from_agent_and_tools(
+        agent=agent,
+        tools=tools,
+        callback_manager=None,
+        tags=["zero-shot-react-description"],
+        verbose=True
     )
-    print(scratchpad)
+
+    inputs = {"input": "what's the date today."}
+
+    agent_executor.run(inputs)
     return
 
 
