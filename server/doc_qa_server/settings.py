@@ -15,8 +15,11 @@ os.makedirs(log_directory, exist_ok=True)
 temp_directory = os.path.join(pwd, 'temp')
 os.makedirs(temp_directory, exist_ok=True)
 
-pdf_directory = os.path.join(pwd, 'static/pdf')
-os.makedirs(log_directory, exist_ok=True)
+static_directory = os.path.join(pwd, 'static')
+os.makedirs(static_directory, exist_ok=True)
+
+pdf_directory = os.path.join(static_directory, 'pdf')
+os.makedirs(pdf_directory, exist_ok=True)
 
 pretrained_models_directory = os.path.join(project_path, 'pretrained_models')
 os.makedirs(pretrained_models_directory, exist_ok=True)
