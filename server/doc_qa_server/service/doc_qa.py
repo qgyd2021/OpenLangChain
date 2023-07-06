@@ -307,30 +307,6 @@ engine_to_chain = {
         openai_api_key=settings.openai_api_key,
         persist_directory=os.path.join(settings.temp_directory, 'persist_directory/pdf_openai_openai'),
     ),
-    'pdf_hf_openai': PdfHfOpenAIDocQA(
-        hf_embedding_repo_id=settings.hf_embedding_repo_id,
-        pretrained_models_directory=settings.pretrained_models_directory,
-        normalize_embeddings=False,
-        device='cpu',
-        openai_api_key=settings.openai_api_key,
-        persist_directory=os.path.join(settings.temp_directory, 'persist_directory/pdf_hf_openai'),
-    ),
-    'pdf_hf_human': PdfHfHumanInputLLMDocQA(
-        hf_embedding_repo_id=settings.hf_embedding_repo_id,
-        pretrained_models_directory=settings.pretrained_models_directory,
-        normalize_embeddings=False,
-        device='cpu',
-        persist_directory=os.path.join(settings.temp_directory, 'persist_directory/pdf_hf_human'),
-    ),
-    'pdf_hf_hf': PdfHfHfDocQA(
-        hf_embedding_repo_id=settings.hf_embedding_repo_id,
-        hf_llm_repo_id=settings.hf_llm_repo_id,
-        pretrained_models_directory=settings.pretrained_models_directory,
-        normalize_embeddings=False,
-        device='cpu',
-        hf_api_token=settings.hf_api_token,
-        persist_directory=os.path.join(settings.temp_directory, 'persist_directory/pdf_hf_hf'),
-    )
 }
 
 
