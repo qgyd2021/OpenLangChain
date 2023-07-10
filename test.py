@@ -1,86 +1,63 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-import argparse
-from datetime import datetime
 from typing import List
 
-from langchain.agents import Tool
-from langchain.agents.agent import Agent
-from langchain.agents.mrkl.output_parser import MRKLOutputParser
-from langchain.chains import LLMChain
-from langchain.llms import OpenAI, HuggingFaceHub
-from langchain.prompts import PromptTemplate
-from langchain.schema import AgentAction, AgentFinish, OutputParserException
-from langchain.agents.mrkl.prompt import PREFIX, FORMAT_INSTRUCTIONS, SUFFIX
-from langchain.agents.mrkl.base import ZeroShotAgent, MRKLChain
-import project_settings as settings
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.schema import Document
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.vectorstores import Chroma
+
+openai_api_key = "${openai_api_key}"
+
+text = """
+Making language models bigger does not inherently make them better at following
+a user’s intent. For example, large language models can generate outputs that
+are untruthful, toxic, or simply not helpful to the user. In other words, these
+models are not aligned with their users. In this paper, we show an avenue for
+aligning language models with user intent on a wide range of tasks by ﬁne-tuning
+with human feedback.
+"""
+
+separator = "\n"
+
+splitter = CharacterTextSplitter(
+    separator=separator,
+    chunk_size=100,
+    chunk_overlap=20,
+    add_start_index=False
+)
+
+document = Document(
+    page_content=text,
+    metadata={
+        'source': 'filename',
+        'page': 0
+    }
+)
+
+# document to chunks
+documents: List[Document] = splitter.split_documents(documents=[document])
+
+# embedding
+hf_embedding = HuggingFaceEmbeddings(
+    model_name=args.model_name,
+    cache_folder=args.pretrained_models_dir,
+    model_kwargs={
+        "device": args.device,
+    },
+    encode_kwargs={
+        "normalize_embeddings": args.normalize_embeddings
+    },
+)
 
 
-def get_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--openai_api_key",
-        default=settings.environment.get("openai_api_key", default=None, dtype=str),
-        type=str
-    )
-    args = parser.parse_args()
-    return args
+# chunks to vector
+vector_db = Chroma.from_documents(
+    documents,
+    embedding=OpenAIEmbeddings(
+        openai_api_key=openai_api_key
+    ),
+    persist_directory='./data'
+)
 
-
-def today_date(query: str) -> str:
-    now = datetime.now()
-    now_str = now.strftime("%Y-%m-%d %H:%M:%S")
-    return now_str
-
-
-def main():
-    args = get_args()
-
-    tools = [
-        Tool(
-            name="Today Date",
-            func=today_date,
-            description="useful for when you want to know the date of today"
-        )
-    ]
-
-    # llm
-    llm = OpenAI(
-        temperature=0.9,
-        openai_api_key=args.openai_api_key
-    )
-
-    # prompt
-    prompt: PromptTemplate = ZeroShotAgent.create_prompt(
-        tools=tools,
-        prefix=PREFIX, suffix=SUFFIX, format_instructions=FORMAT_INSTRUCTIONS,
-        input_variables=["input", "agent_scratchpad"]
-    )
-
-    # llm chain
-    llm_chain = LLMChain(llm=llm, prompt=prompt)
-
-    output_parser = MRKLOutputParser()
-
-    agent: Agent = ZeroShotAgent(
-        llm_chain=llm_chain,
-        output_parser=output_parser,
-        allowed_tools=[tool.name for tool in tools]
-    )
-
-    intermediate_steps = [
-        (
-            AgentAction(tool="Today Date", tool_input="None", log="Action: Date Time\nAction Input: None"),
-            "2023-07-05"
-        )
-    ]
-
-    scratchpad = agent._construct_scratchpad(
-        intermediate_steps=intermediate_steps
-    )
-    print(scratchpad)
-    return
-
-
-if __name__ == '__main__':
-    main()
+vector_db.search("what is language models. ")

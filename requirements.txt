@@ -11,3 +11,4 @@ gevent==22.10.2
 jsonschema==4.17.3
 beautifulsoup4==4.12.2
 urllib3==1.26.15
+neo4j==5.10.0
